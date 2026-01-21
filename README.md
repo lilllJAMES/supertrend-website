@@ -23,11 +23,11 @@ graph TD
     User -->|2. 并发请求 K 线数据| OKX_Candles[OKX Candles API]
     User -->|3. 获取情绪指数| FNG_API[Alternative.me API]
     
-    subgraph Browser_Client [前端核心逻辑 (Vue 3)]
-        Store[响应式状态 (Vue Ref)]
-        Worker[并发调度器 (Worker Pool)]
-        Calculator[指标计算引擎 (Supertrend/RSI)]
-        UI[界面渲染 (DOM/Canvas)]
+    subgraph Browser_Client [前端核心逻辑 Vue 3]
+        Store[响应式状态 Vue Ref]
+        Worker[并发调度器 Worker Pool]
+        Calculator[指标计算引擎 Supertrend/RSI]
+        UI[界面渲染 DOM/Canvas]
     end
     
     OKX_Tickers --> Store
