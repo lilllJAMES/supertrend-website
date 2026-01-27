@@ -10,6 +10,20 @@
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://unpkg.com/lightweight-charts@4.1.1/dist/lightweight-charts.standalone.production.js"></script>
     <style>
+        /* 
+         * ==================================================================================
+         * 【样式层】CSS 设计系统 (Design System)
+         * ==================================================================================
+         * 采用暗色主题 (Dark Mode) 以适应长时间看盘需求。
+         * 核心设计语言：
+         * - 玻璃拟态 (Glassmorphism)：使用 backdrop-filter: blur() 营造现代感。
+         * - 语义化色彩：
+         *   🟢 绿色 (#3fb950)：代表上涨、买入、贪婪。
+         *   🔴 红色 (#f85149)：代表下跌、卖出、恐慌。
+         *   🔵 蓝色 (#58a6ff)：代表中性、加载、信息。
+         *   🟡 黄色 (#d29922)：代表警告、持有。
+         * ==================================================================================
+         */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         [v-cloak] { display: none; }
         :root {
@@ -281,9 +295,18 @@
 </head>
 <body>
     <div id="app" v-cloak class="container">
+        <!-- 
+         * ==================================================================================
+         * 【视图层】头部与状态栏 (Header & Status Bar)
+         * ==================================================================================
+         * - Header: 展示应用标题和 API 来源。
+         * - Status Bar: 展示连接状态、最后更新时间，提供手动刷新按钮。
+         * - Progress Bar: 顶部细长进度条，直观展示数据加载进度。
+         * ==================================================================================
+         -->
         <header class="header">
             <h1>🚀 Crypto SuperTrend Dashboard</h1>
-            <p>实时监控市值前100加密货币的多周期超级趋势指标 <span class="api-badge">OKX API</span></p>
+            <p>实时监控市值前250加密货币的多周期超级趋势指标 <span class="api-badge">OKX API</span></p>
         </header>
 
         <div class="status-bar">
@@ -306,6 +329,18 @@
             <div class="progress-fill" :style="{ width: loadPercent + '%' }"></div>
         </div>
 
+        <!-- 
+         * ==================================================================================
+         * 【视图层】市场情绪面板 (Market Sentiment Panel)
+         * ==================================================================================
+         * 基于 Alternative.me 的恐慌贪婪指数 (FNG)。
+         * 包含四个板块：
+         * 1. 仪表盘：今日指数、分类、趋势变化及进度条。
+         * 2. 市场状态：基于指数生成的文本分析。
+         * 3. 表现预测：对未来走势的简要预测。
+         * 4. 操作建议：针对当前情绪的投资建议。
+         * ==================================================================================
+         -->
         <div v-if="sentiment" class="insight-container">
             <div class="insight-column">
                 <div class="insight-title">
@@ -313,7 +348,10 @@
                     市场情绪
                 </div>
                 <div class="insight-item" style="margin-top:auto;margin-bottom:auto;">
-                    <div class="insight-section-header">今日恐慌贪婪指数</div>
+                    <div class="insight-section-header">
+                        今日恐慌贪婪指数 
+                        <span style="font-weight:400;color:#8b949e;font-size:0.8rem;margin-left:4px;opacity:0.8;">{{ sentiment.today.dateStr }}</span>
+                    </div>
                     <span :class="['fng-value', getSentimentClass(sentiment.today.value)]">
                         {{ sentiment.today.value }}
                         <span style="font-size:1.2rem;font-weight:600;color:#8b949e;vertical-align:middle;margin-left:4px;">{{ sentiment.today.value_classification }}</span>
@@ -324,7 +362,7 @@
                     </div>
 
                     <div style="font-size:0.85rem;color:#8b949e;margin-top:12px;display:flex;justify-content:space-between;">
-                        <span>昨日: <span style="color:#e6edf3;font-weight:600;">{{ sentiment.yesterday.value }}</span></span>
+                        <span>昨日 <span style="font-size:0.8rem;opacity:0.8;">{{ sentiment.yesterday.dateStr }}</span>: <span style="color:#e6edf3;font-weight:600;">{{ sentiment.yesterday.value }}</span></span>
                         <span>
                              变化: <span :style="{color: (parseInt(sentiment.today.value) - parseInt(sentiment.yesterday.value)) >= 0 ? '#3fb950' : '#f85149', fontWeight: 600}">{{ parseInt(sentiment.today.value) - parseInt(sentiment.yesterday.value) > 0 ? '+' : ''}}{{ parseInt(sentiment.today.value) - parseInt(sentiment.yesterday.value) }}</span>
                         </span>
@@ -363,6 +401,14 @@
             </div>
         </div>
 
+        <!-- 
+         * ==================================================================================
+         * 【视图层】控制与统计栏 (Controls & Stats)
+         * ==================================================================================
+         * - Controls: 搜索框、筛选池开关、多维排序按钮、状态过滤器。
+         * - Stats Row: 实时统计当前看涨/看跌/中性币种的数量，辅助判断大盘情绪。
+         * ==================================================================================
+         -->
         <div class="controls">
             <input v-model="searchQuery" type="text" placeholder="搜索币种..." class="btn" style="min-width:260px;">
             <button class="btn" :class="{ active: viewMode === 'watchlist' }" @click="toggleViewMode">
@@ -385,6 +431,18 @@
             <div class="stat-card"><div class="label">已加载</div><div class="value blue">{{ loadedCount }}/{{ coins.length }}</div></div>
         </div>
 
+        <!-- 
+         * ==================================================================================
+         * 【视图层】主数据表格 (Main Data Table)
+         * ==================================================================================
+         * 核心展示区域，列出所有监控币种。
+         * 特性：
+         * - 响应式列宽。
+         * - 骨架屏加载 (Skeleton Loading) 提升用户体验。
+         * - 迷你趋势图 (Sparkline) 预览走势。
+         * - 多周期趋势徽章 (TrendBadge)。
+         * ==================================================================================
+         -->
         <div class="table-container">
             <table>
                 <thead>
@@ -475,6 +533,14 @@
             </table>
         </div>
 
+        <!-- 
+         * ==================================================================================
+         * 【视图层】图表弹窗 (Chart Modal)
+         * ==================================================================================
+         * 点击币种行后触发，全屏覆盖。
+         * 包含 5 个周期的 Lightweight Charts 实例 (15m, 1h, 4h, 1d, 1w)。
+         * ==================================================================================
+         -->
         <!-- Chart Modal -->
         <div v-if="showModal" class="modal-overlay" @click.self="closeModal">
             <div class="modal-content">
@@ -507,8 +573,28 @@
     </div>
 
     <script>
+        // ==================================================================================
+        // 【应用架构】单页应用 (Single Page Application, SPA)
+        // ==================================================================================
+        // 技术栈：
+        // 1. Vue 3 (Composition API)：负责核心状态管理、响应式数据绑定和组件化开发。
+        //    - 使用 createApp().mount() 挂载应用。
+        //    - 大量使用 computed 属性进行高效的数据派生（如过滤、排序、统计）。
+        // 2. Lightweight Charts：负责高性能 K 线图表渲染。
+        // 3. 原生 Fetch API：负责与外部数据源（OKX, Alternative.me）进行异步通信。
+        //
+        // 为什么选择此架构：
+        // - 轻量级：无需构建工具（CDN 引入），直接运行，适合单文件快速开发和部署。
+        // - 响应式：Vue 3 的响应式系统能自动处理复杂的数据更新（250个币种 * 5个周期）。
+        // ==================================================================================
         const { createApp, ref, computed, onMounted } = Vue;
 
+        // ==================================================================================
+        // 【组件层】UI 组件定义
+        // ==================================================================================
+        // 定义可复用的 UI 单元。
+        // TrendBadge: 展示 "15m UP" 或 "4h DOWN" 等趋势状态，包含颜色逻辑和 Loading 骨架屏。
+        // ==================================================================================
         const TrendBadge = {
             props: ['trend','label'],
             template: `
@@ -537,6 +623,19 @@
                 }
             }
         };
+
+        // ==================================================================================
+        // 【量化引擎】核心指标计算模块 (Quantitative Engine)
+        // ==================================================================================
+        // 本模块包含所有技术分析指标的纯数学实现。
+        // 输入：OHLC 原始数据数组。
+        // 输出：计算后的指标值或趋势信号。
+        //
+        // 核心算法：Supertrend (超级趋势)
+        // 原理：基于 ATR (平均真实波幅) 计算上下轨。
+        //      - 当价格突破上轨时，趋势转为下跌（红）。
+        //      - 当价格突破下轨时，趋势转为上涨（绿）。
+        // ==================================================================================
 
         function calculateSupertrend(ohlc, period = 10, multiplier = 3) {
             if (ohlc.length < period + 1) return 'N/A';
@@ -624,6 +723,15 @@
 
             return trend[trend.length - 1] ? 'UP' : 'DOWN';
         }
+
+        // ==================================================================================
+        // 【数据访问层】外部 API 集成 (Data Access Layer)
+        // ==================================================================================
+        // 负责所有与外部交易所或数据提供商的通信。
+        // 特性：
+        // 1. 错误处理：统一捕获 HTTP 错误和业务逻辑错误。
+        // 2. 数据清洗：将原始 API 响应格式化为应用内部使用的标准 OHLC 对象。
+        // ==================================================================================
 
         async function fetchOkxTickers() {
             const url = 'https://www.okx.com/api/v5/market/tickers?instType=SPOT';
@@ -755,6 +863,13 @@
             };
         }
 
+        // ==================================================================================
+        // 【算法模块】相对强弱指数 (RSI) 计算
+        // ==================================================================================
+        // 衡量价格变动的速度和变化，用于识别超买或超卖状态。
+        // 标准周期：14
+        // 阈值通常设为：70 (超买), 30 (超卖)
+        // ==================================================================================
         function calculateRSI(ohlc, period = 14) {
             if (!ohlc || ohlc.length < period + 1) return [];
             
@@ -804,6 +919,14 @@
         createApp({
             components: { TrendBadge },
             setup() {
+                // ==================================================================================
+                // 【状态管理】响应式数据中心 (Reactive State Management)
+                // ==================================================================================
+                // 使用 Vue 3 ref() 定义单一数据源 (Single Source of Truth)。
+                // - coins: 存储 250+ 币种的全量数据（价格、涨跌幅、各周期趋势状态）。
+                // - loading/lastUpdated: 全局 UI 状态。
+                // - searchQuery/filterStatus: 筛选条件状态。
+                // ==================================================================================
                 const coins = ref([]);
                 const loading = ref(false);
                 const lastUpdated = ref(null);
@@ -858,6 +981,15 @@
                     return new Date(lastUpdated.value).toLocaleString('zh-CN');
                 });
 
+                // ==================================================================================
+                // 【计算属性】数据过滤与排序管道 (Filter & Sort Pipeline)
+                // ==================================================================================
+                // 实现高效的前端数据处理：
+                // 1. 搜索过滤：匹配名称或符号。
+                // 2. 关注过滤：仅显示星标币种。
+                // 3. 状态过滤：筛选看涨/看跌/中性币种。
+                // 4. 多维排序：支持按排名、价格、涨跌幅排序。
+                // ==================================================================================
                 const filteredCoins = computed(() => {
                     let result = coins.value.slice();
 
@@ -1015,6 +1147,15 @@
                 ]);
                 const chartInstances = {};
 
+                // ==================================================================================
+                // 【业务逻辑】市场情绪数据获取 (Sentiment Data Fetching)
+                // ==================================================================================
+                // 数据源：Alternative.me Crypto Fear & Greed Index
+                // 功能：
+                // 1. 获取今日和昨日的恐慌贪婪指数。
+                // 2. 根据数值生成对应的市场分析文案、预测和建议。
+                // 3. 错误处理：包含默认回退数据，确保 UI 不崩溃。
+                // ==================================================================================
                 const fetchSentiment = async () => {
                     try {
                         const res = await fetch('https://api.alternative.me/fng/?limit=2');
@@ -1022,6 +1163,15 @@
                         if (json.data && json.data.length >= 2) {
                             const today = json.data[0];
                             const yesterday = json.data[1];
+                            
+                            // Format Dates
+                            const formatDate = (ts) => {
+                                const date = new Date(ts * 1000);
+                                return `${date.getMonth() + 1}月${date.getDate()}日`;
+                            };
+                            today.dateStr = formatDate(today.timestamp);
+                            yesterday.dateStr = formatDate(yesterday.timestamp);
+
                             const val = parseInt(today.value);
                             
                             // Generate analysis based on value
@@ -1064,9 +1214,22 @@
                     } catch (e) {
                         console.error('Fetch sentiment error', e);
                         // Fallback data
+                        const now = new Date();
+                        const yest = new Date(now);
+                        yest.setDate(yest.getDate() - 1);
+                        const formatDate = (d) => `${d.getMonth() + 1}月${d.getDate()}日`;
+
                         sentiment.value = {
-                            today: { value: "50", value_classification: "Neutral" },
-                            yesterday: { value: "50", value_classification: "Neutral" },
+                            today: { 
+                                value: "50", 
+                                value_classification: "Neutral",
+                                dateStr: formatDate(now)
+                            },
+                            yesterday: { 
+                                value: "50", 
+                                value_classification: "Neutral",
+                                dateStr: formatDate(yest)
+                            },
                             analysis: ["无法获取最新市场情绪数据", "请检查网络连接或稍后重试"],
                             prediction: ["数据暂时不可用", "建议参考技术指标进行判断"],
                             advice: "接口请求失败，暂时无法提供操作建议。"
@@ -1138,6 +1301,16 @@
                     });
                 };
 
+                // ==================================================================================
+                // 【展示层】图表渲染控制器 (Presentation Controller)
+                // ==================================================================================
+                // 负责弹窗内的 Lightweight Charts 实例化与生命周期管理。
+                // 职责：
+                // 1. DOM 准备与清理：确保 Canvas 容器存在且无残留。
+                // 2. 数据获取：按需加载特定币种的 K 线数据。
+                // 3. 指标计算：调用 calculateSupertrendFull 生成绘图数据。
+                // 4. 绘图调用：配置图表参数，添加 Series，处理 Resize。
+                // ==================================================================================
                 const renderCharts = async (coin) => {
                     await Vue.nextTick();
                     await new Promise(r => setTimeout(r, 300));
@@ -1273,6 +1446,37 @@
                                 },
                             });
 
+                            // ==================================================================================
+                            // 【架构设计】图表图层分层渲染 (Layered Rendering Architecture)
+                            // ==================================================================================
+                            // Lightweight Charts 没有显式的 z-index 控制，图层遮挡关系取决于 addSeries 的顺序。
+                            // 为了实现“云带填充不遮挡 K 线”的效果，我们采用以下添加顺序（从底到顶）：
+                            // 
+                            // 1. Layer 1 (底层): cloudSeries (Candlestick)
+                            //    - 作用：模拟 Supertrend 的区域填充效果。
+                            //    - 技术：使用半透明颜色，利用蜡烛图实体来填充 ST 线到 K 线之间的空隙。
+                            // 
+                            // 2. Layer 2 (中层): candlestickSeries (Candlestick)
+                            //    - 作用：展示核心价格数据（OHLC）。
+                            //    - 为什么后添加：确保 K 线实体始终浮在云带之上，保证看盘清晰度。
+                            // 
+                            // 3. Layer 3 (顶层): stSeries (Line) - *后续添加*
+                            //    - 作用：绘制 Supertrend 趋势线。
+                            //    - 为什么最后添加：确保趋势线压在所有元素之上，提供明确的支撑/压力位指示。
+                            // ==================================================================================
+
+                            // Add Cloud Series (Rendered behind candles)
+                            // 添加云带图层（渲染在 K 线图层下方）
+                            // 这是一个 CandlestickSeries（蜡烛图），用于模拟“区域填充”效果
+                            const cloudSeries = chart.addCandlestickSeries({
+                                upColor: 'rgba(34, 197, 94, 0.15)',   // 上涨趋势云带颜色（半透明绿）
+                                downColor: 'rgba(239, 68, 68, 0.15)', // 下跌趋势云带颜色（半透明红）
+                                borderVisible: false,                  // 隐藏边框，使填充看起来更柔和
+                                wickVisible: false,                    // 隐藏影线，只显示实体部分作为填充区
+                                lastValueVisible: false,               // 不在价格轴显示数值标签
+                                priceLineVisible: false,               // 不显示当前价格线
+                            });
+
                             const candlestickSeries = chart.addCandlestickSeries({
                                 upColor: '#238636',
                                 downColor: '#da3633',
@@ -1319,51 +1523,173 @@
                                 });
                             }
 
-                            // 处理 Supertrend 线数据：合并为单条线以避免断裂
-                            const stData = [];
+                            // ==================================================================================
+                            // 【核心算法】数据转换与视觉处理管线 (Data Transformation Pipeline)
+                            // ==================================================================================
+                            // 本模块负责将原始的计算指标数据转换为 Lightweight Charts 可识别的 Series 数据格式。
+                            // 包含三大核心技术实现：
+                            //
+                            // 1. 【透明断点技术 (Transparent Breakpoint)】
+                            //    - 问题：LineSeries 默认会将相邻数据点连接。当趋势反转（红变绿）时，
+                            //           会产生一条横跨价格的连线（粘连），干扰视觉。
+                            //    - 解决方案：利用 Lightweight Charts "线段颜色由起点决定" 的渲染特性。
+                            //              在趋势切换的瞬间，将“前一个点”颜色设为透明 (rgba(0,0,0,0))。
+                            //              这使得两点间的连线隐形，制造出物理断开的视觉效果。
+                            //
+                            // 2. 【云带模拟技术 (Cloud Simulation)】
+                            //    - 问题：库本身不支持“线到线”的动态区域填充。
+                            //    - 解决方案：利用 CandlestickSeries 的实体部分进行 Hack。
+                            //              构造伪造的 OHLC 数据，将 Open 设为 Supertrend 值，Close 设为 K线极值。
+                            //              从而画出一个矩形实体，完美填补指标与价格间的空隙。
+                            //
+                            // 3. 【信号状态机 (Signal State Machine)】
+                            //    - 逻辑：维护 prevTrend 状态变量。仅在状态发生异或变化 (!=) 时触发买卖信号。
+                            // ==================================================================================
+
+                            // 处理 Supertrend 线数据：使用 LineSeries + 修改前一点颜色策略
+                            // 逻辑：LineSeries 的线段颜色通常由“起始点”决定。
+                            // 要隐藏从 A(上个趋势终点) 到 B(新趋势起点) 的连线，
+                            // 我们需要将 A 的颜色设为透明。
+                            const stData = [];    // 存储 Supertrend 线条数据
+                            const cloudData = []; // 存储云带填充数据（Candlestick 格式）
+                            const markers = [];   // 存储买卖信号标记
                             
                             // 创建完整的 timeline map 以便于查找
+                            // 将 Supertrend 数据转换为 Map，以便通过时间戳快速获取对应的值
                             const stMap = new Map();
                             data.supertrendSeries.forEach(item => {
                                 stMap.set(item.time, item);
                             });
 
-                            // 遍历所有有效 K 线时间点，确保数据对齐
+                            let prevTrend = null; // 记录上一个时间点的趋势状态 (true=涨/绿, false=跌/红)
+
+                            // 遍历所有有效 K 线时间点
                             validCandles.forEach(c => {
-                                const item = stMap.get(c.time);
+                                const item = stMap.get(c.time); // 获取当前时间点的 Supertrend 数据
+                                
                                 if (item && !isNaN(item.value)) {
-                                    stData.push({ 
-                                        time: c.time, 
+                                    const isUp = item.color === '#22c55e'; // 判断当前趋势方向
+                                    
+                                    // 当前点的颜色 (绿或红)
+                                    const pointColor = isUp ? '#22c55e' : '#ef4444';
+                                    
+                                    // 关键逻辑：如果趋势发生变化（从绿变红，或从红变绿）
+                                    // 将【上一个点】的颜色设为透明。
+                                    if (prevTrend !== null && prevTrend !== isUp) {
+                                        if (stData.length > 0) {
+                                            // 修改数组中最后一个数据点的颜色为透明
+                                            // 效果：隐藏了从“上一个点”到“当前点”的连线，形成视觉断开
+                                            stData[stData.length - 1].color = 'rgba(0, 0, 0, 0)';
+                                        }
+                                    }
+
+                                    // 推入当前点的线条数据
+                                    stData.push({
+                                        time: c.time,
                                         value: item.value,
-                                        color: item.color // 直接使用计算好的颜色
+                                        color: pointColor // LineSeries v4 支持单点颜色
                                     });
+
+                                    // Cloud Data (区域填充)
+                                    // 使用 Candlestick 模拟填充：Open=ST, Close=CandleLimit
+                                    // 我们利用蜡烛图的“实体部分”来作为填充区域
+                                    if (isUp) {
+                                        // 绿云情况（上涨趋势）：
+                                        // 填充区域范围：从 Supertrend 值(下界) 到 K线最低价(上界)
+                                        // 注意：为了视觉效果，这里选择了填充到 Low，这会让云带紧贴 K 线底部
+                                        cloudData.push({
+                                            time: c.time,
+                                            open: item.value, // 实体底部
+                                            high: c.low,      // 影线最高（这里设为和 close 一样，隐藏影线）
+                                            low: item.value,  // 影线最低（这里设为和 open 一样，隐藏影线）
+                                            close: c.low      // 实体顶部
+                                        });
+                                    } else {
+                                        // 红云情况（下跌趋势）：
+                                        // 填充区域范围：从 Supertrend 值(上界) 到 K线最高价(下界)
+                                        // 注意：填充到 High，让云带紧贴 K 线顶部
+                                        cloudData.push({
+                                            time: c.time,
+                                            open: item.value, // 实体顶部 (因为是跌势颜色，Open > Close 逻辑可能反直觉，但这里只看位置)
+                                            high: item.value,
+                                            low: c.high,
+                                            close: c.high     // 实体底部
+                                        });
+                                    }
+
+                                    // 信号标记 (Buy/Sell Arrows)
+                                    if (prevTrend !== null && prevTrend !== isUp) {
+                                        if (isUp) { // Turn Green -> Buy (趋势由红转绿)
+                                            markers.push({
+                                                time: c.time,
+                                                position: 'belowBar', // 标记在 K 线下方
+                                                color: '#22c55e',
+                                                shape: 'arrowUp',
+                                                text: 'Buy',
+                                                size: 2
+                                            });
+                                        } else { // Turn Red -> Sell (趋势由绿转红)
+                                            markers.push({
+                                                time: c.time,
+                                                position: 'aboveBar', // 标记在 K 线上方
+                                                color: '#ef4444',
+                                                shape: 'arrowDown',
+                                                text: 'Sell',
+                                                size: 2
+                                            });
+                                        }
+                                    }
+                                    prevTrend = isUp; // 更新趋势状态，供下一次循环比对
+                                } else {
+                                    // 无数据时，显式推入 whitespace 以保持时间轴对齐
+                                    stData.push({ time: c.time });
+                                    cloudData.push({ time: c.time });
                                 }
                             });
 
-                            if(stData.length > 0) {
+                            // Set Cloud Data (应用云带数据)
+                            cloudSeries.setData(cloudData);
+
+                            // 添加 Supertrend Series (改回 LineSeries，使用透明色断开)
+                            if (stData.length > 0) {
                                 const stSeries = chart.addLineSeries({
                                     lineWidth: 2,
                                     priceLineVisible: false,
                                     lastValueVisible: false,
                                     crosshairMarkerVisible: false,
+                                    // LineSeries 不需要 topColor/bottomColor
                                 });
                                 stSeries.setData(stData);
+                            }
 
-                                // Add Supertrend Legend
-                                const lastSt = stData[stData.length - 1];
-                                // We can infer direction from color since we set it in calculateSupertrendFull
-                                const isUp = lastSt.color === '#22c55e'; 
-                                const label = isUp ? 'Support' : 'Resistance';
-                                const color = isUp ? '#3fb950' : '#f85149';
-                                const formattedPrice = formatPrice(lastSt.value);
+                            // 添加 Markers 到 K线 Series
+                            candlestickSeries.setMarkers(markers);
 
+                            // Add Supertrend Legend
+                            let lastValue, lastColor, lastLabel;
+                            const lastItem = stData[stData.length - 1];
+
+                            if (lastItem && !isNaN(lastItem.value)) {
+                                // 根据 prevTrend 判断最后的趋势状态
+                                if (prevTrend === true) {
+                                    lastValue = lastItem.value;
+                                    lastColor = '#3fb950';
+                                    lastLabel = 'Support';
+                                } else if (prevTrend === false) {
+                                    lastValue = lastItem.value;
+                                    lastColor = '#f85149';
+                                    lastLabel = 'Resistance';
+                                }
+                            }
+
+                            if (lastValue) {
+                                const formattedPrice = formatPrice(lastValue);
                                 const legend = document.createElement('div');
                                 legend.className = 'chart-supertrend-legend';
-                                legend.style.borderColor = 'rgba(48, 54, 61, 0.5)'; // Keep border subtle or match color? User asked for colored text maybe. Let's keep border neutral or colored.
-                                // Let's use the color for the text and dot
+                                legend.style.borderColor = 'rgba(48, 54, 61, 0.5)';
                                 legend.innerHTML = `
-                                    <div class="st-legend-dot" style="background: ${color}"></div>
-                                    <span style="color: ${color}">${label}: ${formattedPrice}</span>
+                                    <div class="st-legend-dot" style="background: ${lastColor}"></div>
+                                    <span style="color: ${lastColor}">${lastLabel}: ${formattedPrice}</span>
                                 `;
                                 container.appendChild(legend);
                             }
@@ -1392,6 +1718,15 @@
                     }
                 };
 
+                // ==================================================================================
+                // 【业务逻辑】主数据加载与调度 (Main Data Fetching & Scheduling)
+                // ==================================================================================
+                // 核心流程：
+                // 1. 获取所有 USDT 交易对 Tickers -> 排序取前 250 名。
+                // 2. 初始化/更新 coins 列表基础信息。
+                // 3. 生成 K 线获取任务队列 (250币种 * 5周期 = 1250个请求)。
+                // 4. 启动并发工作池 (Worker Pool) 消费任务队列。
+                // ==================================================================================
                 const fetchData = async () => {
                     loading.value = true;
                     try {
@@ -1464,7 +1799,18 @@
                         // Replaces unstable dynamic scheduler with a robust, zero-delay worker system
                         // Optimized for browser limit (HTTP/1.1 ~6 conns, HTTP/2 multiplexing support)
                         
-                        const CONCURRENCY = 8; // Stable "Sweet Spot" for max throughput
+                // ==================================================================================
+                // 【业务逻辑】主并发请求调度器 (Concurrency Worker Pool)
+                // ==================================================================================
+                // OKX API 有严格的频率限制，且我们需要请求 1250+ 个数据点。
+                // 实现方案：
+                // 1. 固定并发数 (CONCURRENCY = 8)：平衡请求速度与稳定性。
+                // 2. 全局限流暂停 (pausedUntil)：当收到 429 (Too Many Requests) 时，
+                //    所有 Worker 立即进入休眠状态，2-3秒后自动恢复。
+                // 3. 重试机制：每个请求失败后会有 3 次重试机会。
+                // ==================================================================================
+                
+                const CONCURRENCY = 8; // Stable "Sweet Spot" for max throughput
                         let cursor = 0;
                         let pausedUntil = 0; // Global pause timestamp for rate limiting
 
