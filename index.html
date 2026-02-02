@@ -291,6 +291,146 @@
         @keyframes spin { to { transform: rotate(360deg); } }
 
         @media (max-width: 900px) { .stats-row { grid-template-columns: repeat(2, 1fr); } .insight-container { grid-template-columns: 1fr; } }
+
+        /* ==================================================================================
+         * 【移动端适配】Mobile Responsive Styles
+         * ================================================================================== */
+        .mobile-list { display: none; }
+        
+        @media (max-width: 900px) {
+            .container { padding: 12px; max-width: 100%; overflow-x: hidden; }
+            /* Compact Header */
+            .header { padding: 8px 0 4px; margin-bottom: 6px; }
+            .header h1 { font-size: 1.3rem; margin-bottom: 2px; }
+            .header p { font-size: 0.8rem; line-height: 1.2; display: none; } /* Hide subtitle */
+            .api-badge { transform: scale(0.8); }
+            
+            /* Compact Status Bar */
+            .status-bar { padding: 6px 10px; margin-bottom: 8px; gap: 8px; flex-direction: row; flex-wrap: wrap; justify-content: space-between; }
+            
+            /* Limit Analysis/Prediction to 1 item on mobile to save space */
+            .insight-column .insight-item:nth-of-type(n+3) { display: none; }
+            .status-left { gap: 8px; font-size: 0.75rem; width: auto; }
+            .status-item { gap: 4px; }
+            .status-bar div:last-child { width: auto; }
+            .status-bar button { width: auto; padding: 4px 12px; font-size: 0.75rem; min-height: 28px; }
+            
+            /* Compact Insight Grid (Force 2x2) */
+            .insight-container { 
+                grid-template-columns: repeat(2, 1fr) !important; 
+                margin-bottom: 8px; 
+                gap: 1px;
+            }
+            .insight-column { padding: 6px; overflow: hidden; }
+            .insight-title { font-size: 0.65rem; margin-bottom: 2px; gap: 3px; opacity: 0.9; }
+            .insight-title svg { width: 12px; height: 12px; }
+            .insight-item { 
+                font-size: 0.6rem; 
+                line-height: 1.2; 
+                margin-bottom: 1px;
+                opacity: 0.9;
+            }
+            
+            /* FNG Specifics - Extremely Compact */
+            .fng-value { font-size: 1rem; margin-top: 0; font-weight: 700; line-height: 1.2; }
+            .fng-value span { font-size: 0.75rem !important; margin-left: 2px !important; }
+            .sentiment-bar-bg { height: 3px; margin-top: 2px; margin-bottom: 0; }
+            .insight-section-header { font-size: 0.6rem; margin-bottom: 0; opacity: 0.7; display: flex; justify-content: space-between; }
+            
+            /* Hide Yesterday/Change info to save significant space */
+            .insight-column:first-child .insight-item > div:last-child { display: none; }
+
+            /* Compact Stats Row */
+            .stats-row { 
+                gap: 4px; margin-bottom: 8px; 
+                grid-template-columns: repeat(2, 1fr) !important; 
+            }
+            .stat-card { padding: 6px; border-radius: 8px; }
+            .stat-card .label { font-size: 0.6rem; margin-bottom: 0; opacity: 0.7; }
+            .stat-card .value { font-size: 0.95rem; line-height: 1.1; }
+            
+            /* Hide Table, Show Cards */
+            .table-container { display: none; }
+            .mobile-list { display: flex; flex-direction: column; gap: 8px; }
+            
+            .mobile-card {
+                background: var(--card-bg);
+                border: 1px solid var(--card-border);
+                border-radius: 12px;
+                padding: 10px 12px;
+                backdrop-filter: blur(10px);
+                position: relative;
+                transition: transform 0.2s;
+                display: flex;
+                flex-direction: column;
+                gap: 6px;
+            }
+            .mobile-card:active { transform: scale(0.98); }
+            
+            /* Compact Row 1: Header */
+            .mc-row-top { display: flex; justify-content: space-between; align-items: center; }
+            .mc-left { display: flex; align-items: center; gap: 8px; }
+            .mc-rank { 
+                font-size: 0.7rem; color: #8b949e; background: rgba(255,255,255,0.05); 
+                padding: 2px 4px; border-radius: 4px; min-width: 20px; text-align: center;
+            }
+            .mc-icon { width: 24px; height: 24px; border-radius: 50%; object-fit: cover; }
+            .mc-icon-fallback { 
+                width: 24px; height: 24px; border-radius: 50%; display: flex; 
+                align-items: center; justify-content: center; font-size: 10px; color: #fff; font-weight: bold;
+            }
+            .mc-symbol { font-weight: 700; font-size: 1rem; color: #c9d1d9; }
+            
+            .mc-right { display: flex; flex-direction: column; align-items: flex-end; gap: 0px; }
+            .mc-price { font-size: 1rem; font-weight: 600; color: #f0f6fc; }
+            .mc-change { font-size: 0.75rem; font-weight: 500; }
+            
+            /* Compact Row 2: Trends + Chart */
+            .mc-row-bot { display: flex; justify-content: space-between; align-items: center; margin-top: 2px; }
+            .mc-trends { display: flex; gap: 4px; }
+            .trend-pill {
+                padding: 2px 6px;
+                border-radius: 4px;
+                font-size: 0.65rem;
+                font-weight: 700;
+                color: #fff;
+                min-width: 28px;
+                text-align: center;
+                background: #30363d; /* default neutral */
+            }
+            .trend-pill.up { background: rgba(63, 185, 80, 0.4); color: #3fb950; border: 1px solid rgba(63, 185, 80, 0.5); }
+            .trend-pill.down { background: rgba(248, 81, 73, 0.4); color: #f85149; border: 1px solid rgba(248, 81, 73, 0.5); }
+            .trend-pill.loading { opacity: 0.5; animation: pulse 1.5s infinite; }
+            
+            .mc-chart { height: 24px; width: 60px; opacity: 0.8; }
+            
+            .mobile-card-footer { display: none; }
+            
+            /* Compact Controls */
+            .controls { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+            .controls input { width: 100% !important; height: 32px; font-size: 0.85rem; margin: 0; }
+            .controls div[style*="width: 1px"] { display: none; }
+            .controls .btn { 
+                flex: 1 1 calc(25% - 4px); 
+                padding: 0; 
+                height: 28px; 
+                font-size: 0.7rem; 
+                min-width: unset; 
+                display: flex; 
+                align-items: center; 
+                justify-content: center; 
+            }
+            .controls .btn:nth-of-type(2) { flex: 1 1 100%; } /* Watchlist */
+            /* Sort buttons (3,4,5) */
+            .controls .btn:nth-of-type(3), 
+            .controls .btn:nth-of-type(4), 
+            .controls .btn:nth-of-type(5) { flex: 1 1 calc(33.33% - 4px); font-size: 0.65rem; }
+            
+            /* Modal Adjustments */
+            .modal-content { height: 100vh; width: 100%; border-radius: 0; border: none; }
+            .modal-body { padding: 10px; }
+            .chart-container { height: 300px; margin-bottom: 10px; }
+        }
     </style>
 </head>
 <body>
@@ -306,8 +446,39 @@
          -->
         <header class="header">
             <h1>🚀 Crypto SuperTrend Dashboard</h1>
-            <p>实时监控市值前250加密货币的多周期超级趋势指标 <span class="api-badge">OKX API</span></p>
+            <p>实时监控市值前250加密货币的多周期超级趋势指标 <span class="api-badge">MEXC API</span></p>
+            <div style="position: absolute; top: 10px; right: 10px;">
+                <button @click="showSettings = true" class="btn" style="padding: 5px 10px; font-size: 1.2rem;">⚙️</button>
+            </div>
         </header>
+
+        <!-- Settings Modal -->
+        <div v-if="showSettings" class="modal-overlay" @click.self="showSettings = false">
+            <div class="modal-content" style="max-width: 500px;">
+                <div class="modal-header">
+                    <h3>⚙️ API 设置</h3>
+                    <button class="close-btn" @click="showSettings = false">×</button>
+                </div>
+                <div class="modal-body">
+                    <p style="margin-bottom: 15px; color: #8b949e;">
+                        由于浏览器安全策略 (CORS) 和网络限制，在 GitHub Pages 等静态托管环境运行时，需要配置 API 代理地址。
+                    </p>
+                    
+                    <div style="margin-bottom: 20px;">
+                        <label style="display:block; margin-bottom:5px; font-weight:bold;">Cloudflare Worker URL</label>
+                        <input type="text" v-model="apiBaseUrl" placeholder="https://your-worker.workers.dev" 
+                               style="width: 100%; padding: 10px; background: #0d1117; border: 1px solid #30363d; color: #c9d1d9; border-radius: 6px;">
+                        <p style="font-size: 0.8rem; color: #8b949e; margin-top: 5px;">
+                            请部署提供的 <code>cf_worker.js</code> 到您的 Cloudflare Workers，并将生成的 URL 填入此处。
+                        </p>
+                    </div>
+
+                    <div style="text-align: right;">
+                        <button class="btn" @click="saveApiSettings">保存并刷新</button>
+                    </div>
+                </div>
+            </div>
+        </div>
 
         <div class="status-bar">
             <div class="status-left">
@@ -315,6 +486,8 @@
                     <span :class="['status-dot', loading ? 'loading' : '']"></span>
                     <span>{{ loading ? '正在连接...' : '已连接' }}</span>
                 </div>
+
+
                 <div class="status-item">
                     <span>最后更新：</span>
                     <span>{{ lastUpdatedFormatted }}</span>
@@ -535,6 +708,84 @@
 
         <!-- 
          * ==================================================================================
+         * 【移动端视图】卡片列表 (Mobile Card List)
+         * ==================================================================================
+         * 仅在屏幕宽度 < 900px 时显示。
+         * ==================================================================================
+         -->
+        <div class="mobile-list">
+            <!-- Skeleton for Mobile (Compact) -->
+            <div v-if="loading && coins.length === 0" v-for="i in 5" :key="'m-skeleton-'+i" class="mobile-card">
+                 <div class="mc-row-top">
+                     <div class="mc-left">
+                        <div class="skeleton" style="width: 24px; height: 16px;"></div>
+                        <div class="skeleton" style="width: 24px; height: 24px; border-radius: 50%;"></div>
+                        <div class="skeleton" style="width: 40px; height: 16px;"></div>
+                     </div>
+                     <div class="mc-right">
+                        <div class="skeleton" style="width: 60px; height: 16px; margin-bottom: 2px;"></div>
+                        <div class="skeleton" style="width: 40px; height: 12px;"></div>
+                     </div>
+                 </div>
+                 <div class="mc-row-bot">
+                     <div class="mc-trends">
+                        <div class="skeleton" style="width: 28px; height: 16px;" v-for="j in 5"></div>
+                     </div>
+                     <div class="skeleton" style="width: 60px; height: 20px;"></div>
+                 </div>
+            </div>
+
+            <div class="mobile-card" v-for="coin in filteredCoins" :key="'m-'+coin.symbol" @click="openChart(coin)">
+                <!-- Row 1: Header Info -->
+                <div class="mc-row-top">
+                    <div class="mc-left">
+                        <span class="mc-rank">#{{ coin.rank }}</span>
+                        <div class="mc-icon-wrapper">
+                             <img v-if="coin.image" :src="coin.image" :alt="coin.symbol" class="mc-icon" @error="coin.image = null">
+                             <div v-else class="mc-icon-fallback" :style="{ background: coinColor(coin.symbol) }">
+                                 {{ coin.symbol.slice(0,1) }}
+                             </div>
+                        </div>
+                        <span class="mc-symbol">{{ coin.symbol }}</span>
+                    </div>
+                    
+                    <div class="mc-right">
+                        <span class="mc-price">${{ formatPrice(coin.price) }}</span>
+                        <span class="mc-change" :style="{ color: coin.changePercent >= 0 ? '#3fb950' : '#f85149' }">
+                            {{ coin.changePercent >= 0 ? '+' : '' }}{{ coin.changePercent.toFixed(2) }}%
+                        </span>
+                    </div>
+                    
+                    <!-- Star Button Absolute or Inline? Let's make it inline next to rank or overlay? 
+                         For simplicity, let's put it absolute top right but handle spacing.
+                         Actually, let's just not include it in the compact row to save space, or put it next to symbol.
+                         Let's put it next to symbol.
+                    -->
+                    <button class="btn-star" :class="{ active: isSelected(coin) }" @click.stop="toggleSelection(coin)" style="position: absolute; top: 8px; right: -2px; opacity: 0.3; transform: scale(0.8);">★</button>
+                </div>
+                
+                <!-- Row 2: Trends + Chart -->
+                <div class="mc-row-bot">
+                    <div class="mc-trends">
+                        <div class="trend-pill" :class="{'up': coin.trend_15m === 'UP', 'down': coin.trend_15m === 'DOWN', 'loading': coin.trend_15m === 'Loading'}">15m</div>
+                        <div class="trend-pill" :class="{'up': coin.trend_1h === 'UP', 'down': coin.trend_1h === 'DOWN', 'loading': coin.trend_1h === 'Loading'}">1H</div>
+                        <div class="trend-pill" :class="{'up': coin.trend_4h === 'UP', 'down': coin.trend_4h === 'DOWN', 'loading': coin.trend_4h === 'Loading'}">4H</div>
+                        <div class="trend-pill" :class="{'up': coin.trend_1d === 'UP', 'down': coin.trend_1d === 'DOWN', 'loading': coin.trend_1d === 'Loading'}">1D</div>
+                        <div class="trend-pill" :class="{'up': coin.trend_1w === 'UP', 'down': coin.trend_1w === 'DOWN', 'loading': coin.trend_1w === 'Loading'}">1W</div>
+                    </div>
+                    
+                    <!-- Mini Chart (Compact) -->
+                    <div class="mc-chart" v-html="generateMiniChart(coin, 60, 24)"></div>
+                </div>
+            </div>
+            
+             <div v-if="filteredCoins.length === 0 && !loading" style="text-align:center; padding: 20px; color: #8b949e; font-size: 0.8rem;">
+                暂无数据
+             </div>
+        </div>
+
+        <!-- 
+         * ==================================================================================
          * 【视图层】图表弹窗 (Chart Modal)
          * ==================================================================================
          * 点击币种行后触发，全屏覆盖。
@@ -733,24 +984,59 @@
         // 2. 数据清洗：将原始 API 响应格式化为应用内部使用的标准 OHLC 对象。
         // ==================================================================================
 
-        async function fetchOkxTickers() {
-            const url = 'https://www.okx.com/api/v5/market/tickers?instType=SPOT';
-            const res = await fetch(url);
-            const json = await res.json();
-            if (json.code !== '0') throw new Error('OKX tickers error: ' + JSON.stringify(json));
-            return json.data;
-        }
-
-        async function fetchOkxCandles(instId, bar, limit = 100) {
-            const url = `https://www.okx.com/api/v5/market/candles?instId=${encodeURIComponent(instId)}&bar=${encodeURIComponent(bar)}&limit=${limit}`;
+        async function fetchMexcTickers(apiUrl) {
+            // 使用配置的 API 地址
+            const url = apiUrl;
             const res = await fetch(url);
             if (!res.ok) throw new Error('HTTP ' + res.status);
             const json = await res.json();
-            if (json.code !== '0') throw new Error('OKX candles error: ' + JSON.stringify(json));
-            const candles = json.data || [];
-            if (!candles.length) return null;
+            
+            // MEXC 返回数组直接包含所有 Tickers
+            if (!Array.isArray(json)) throw new Error('MEXC tickers error: invalid format');
+            
+            return json.map(t => {
+                // 仅处理 USDT 交易对
+                if (!t.symbol.endsWith('USDT')) return null;
+                
+                return {
+                    // 构造兼容 OKX 格式的 instId (e.g., BTC-USDT)
+                    instId: t.symbol.replace(/USDT$/, '-USDT'),
+                    last: t.lastPrice,
+                    volCcy24h: t.quoteVolume, // 24h 成交额 (USDT)
+                    open24h: t.openPrice,     // 24h 开盘价
+                    high24h: t.highPrice,
+                    low24h: t.lowPrice
+                };
+            }).filter(t => t !== null);
+        }
 
-            const ohlc = candles.map(c => ({
+        async function fetchMexcCandles(instId, bar, limit = 100, baseUrl = '') {
+            // 转换 instId: "BTC-USDT" -> "BTCUSDT"
+            const symbol = instId.replace('-', '');
+            
+            // 转换时间周期
+            const intervalMap = {
+                '15m': '15m',
+                '1H': '60m',
+                '4H': '4h',
+                '1D': '1d'
+            };
+            const interval = intervalMap[bar] || '60m';
+            
+            // 使用配置的 API 地址
+            // Remove leading slash if baseUrl has trailing slash
+            if (baseUrl && baseUrl.endsWith('/')) baseUrl = baseUrl.slice(0, -1);
+            const url = `${baseUrl}/api/candles?symbol=${symbol}&interval=${interval}&limit=${limit}`;
+            
+            const res = await fetch(url);
+            if (!res.ok) throw new Error('HTTP ' + res.status);
+            const json = await res.json();
+            
+            if (!Array.isArray(json)) throw new Error('MEXC candles error: ' + JSON.stringify(json));
+            if (json.length === 0) return null;
+
+            // MEXC Format: [time, open, high, low, close, vol, closeTime, quoteVol]
+            const ohlc = json.map(c => ({
                 ts: Number(c[0]),
                 open: Number(c[1]),
                 high: Number(c[2]),
@@ -936,6 +1222,25 @@
                 const filterStatus = ref('all');
                 const selectedCoins = ref(new Set());
                 const viewMode = ref('all');
+                
+                // API Proxy Configuration
+                // Default to local server if on localhost, otherwise empty (requires user input)
+                const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                const apiBaseUrl = ref(localStorage.getItem('api_base_url') || (isLocal ? '' : ''));
+                const showSettings = ref(false);
+
+                const saveApiSettings = () => {
+                    localStorage.setItem('api_base_url', apiBaseUrl.value);
+                    showSettings.value = false;
+                    fetchData(); // Reload with new API
+                };
+
+                const getApiUrl = (path) => {
+                    // Remove leading slash if apiBaseUrl has trailing slash
+                    let base = apiBaseUrl.value;
+                    if (base && base.endsWith('/')) base = base.slice(0, -1);
+                    return `${base}${path}`;
+                };
 
                 const loadSelection = () => {
                     const saved = localStorage.getItem('selectedCoins');
@@ -1158,7 +1463,9 @@
                 // ==================================================================================
                 const fetchSentiment = async () => {
                     try {
-                        const res = await fetch('https://api.alternative.me/fng/?limit=2');
+                        // 使用配置的 API 地址
+                        const url = getApiUrl('/api/fng');
+                        const res = await fetch(url);
                         const json = await res.json();
                         if (json.data && json.data.length >= 2) {
                             const today = json.data[0];
@@ -1338,7 +1645,7 @@
                                     if (timeframes.value.indexOf(tf) > 0) {
                                         await new Promise(r => setTimeout(r, 300));
                                     }
-                                    ohlc = await fetchOkxCandles(coin.instId, tf.bar, 300);
+                                    ohlc = await fetchMexcCandles(coin.instId, tf.bar, 300, apiBaseUrl.value);
                                     if (ohlc) break;
                                 } catch (err) {
                                     if (err.message.includes('429')) {
@@ -1730,7 +2037,16 @@
                 const fetchData = async () => {
                     loading.value = true;
                     try {
-                        const tickers = await fetchOkxTickers();
+                        // Check if API URL is configured (unless localhost)
+                        if (!isLocal && !apiBaseUrl.value) {
+                            showSettings.value = true;
+                            // Don't throw error, just stop loading to show empty state with settings open
+                            loading.value = false;
+                            return; 
+                        }
+
+                        const url = getApiUrl('/api/tickers');
+                        const tickers = await fetchMexcTickers(url);
                         const usdtTickers = tickers.filter(t =>
                             typeof t.instId === 'string' && t.instId.endsWith('-USDT')
                         );
@@ -1831,7 +2147,7 @@
                                     
                                     while (retries > 0) {
                                         try {
-                                            ohlc = await fetchOkxCandles(task.instId, task.bar);
+                                            ohlc = await fetchMexcCandles(task.instId, task.bar, 100, apiBaseUrl.value);
                                             break; // Success
                                         } catch (err) {
                                             if (err.message && err.message.includes('429')) {
@@ -1926,7 +2242,11 @@
                     viewMode,
                     toggleSelection,
                     isSelected,
-                    toggleViewMode
+                    toggleViewMode,
+                    apiBaseUrl,
+                    showSettings,
+                    saveApiSettings,
+                    isLocal
                 };
             }
         }).mount('#app');
